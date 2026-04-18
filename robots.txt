@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://osram90.github.io/Bioinformatic-MDatos/sitemap.xml
