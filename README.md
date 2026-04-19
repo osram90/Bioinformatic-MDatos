@@ -1,60 +1,57 @@
-# MDatos-Bioinformatica — Portal inicial profesional
+# MDatos-Bioinformatica Web
 
-Portal inicial para presentar servicios de **Molecular Docking** y **Dinámica Molecular** con despliegue automático en **GitHub Pages** y opción en **Vercel**.
+Frontend del portal MDatos-Bioinformatica construido con **React + Vite**.
 
-## 1) Estructura del proyecto
+## Stack
 
-- `index.html` → contenido principal del portal.
-- `styles.css` → diseño responsivo y estilos.
-- `script.js` → interacción de menú + scroll suave + año dinámico.
-- `favicon.svg` → favicon del sitio.
-- `robots.txt` y `sitemap.xml` → SEO básico.
-- `.github/workflows/deploy-pages.yml` → despliegue automático a GitHub Pages.
-- `vercel.json` → configuración para Vercel.
+- React 18
+- Vite 5
+- CSS custom (sin framework UI)
+- Deploy automático a GitHub Pages por GitHub Actions
+- Deploy opcional en Vercel
 
-## 2) Probar localmente
+## Estructura
+
+- `src/App.jsx`: contenido principal del portal.
+- `src/main.jsx`: bootstrap de React.
+- `src/styles.css`: estilos globales/responsivos.
+- `public/`: assets estáticos (`favicon.svg`, `robots.txt`, `sitemap.xml`).
+- `.github/workflows/deploy-pages.yml`: build + publish de `dist/` a Pages.
+
+## Desarrollo local
 
 ```bash
-cd Bioinformatic-MDatos
-python3 -m http.server 8000 --bind 127.0.0.1
+npm install
+npm run dev
 ```
 
-Abrir en navegador: `http://127.0.0.1:8000`
+Abrir `http://localhost:5173`
 
-## 3) Publicar en GitHub Pages (automático)
+## Build de producción
 
-### Requisitos
-- Repositorio en GitHub.
-- Rama principal `main`.
+```bash
+npm run build
+npm run preview
+```
 
-### Pasos
-1. Sube los cambios a `main`.
-2. En GitHub abre: `Settings > Pages`.
-3. En **Source**, elige **GitHub Actions**.
-4. Al hacer push a `main`, se ejecuta el workflow `.github/workflows/deploy-pages.yml`.
-5. URL esperada:
-   - `https://osram90.github.io/Bioinformatic-MDatos/`
+## Publicación en GitHub Pages
 
-## 4) Publicar en Vercel
+1. En el repo, ve a **Settings > Pages**.
+2. En **Source**, selecciona **GitHub Actions**.
+3. Haz push a `main`.
+4. El workflow compila (`npm ci`, `npm run build`) y publica `dist/`.
 
-1. Importa el repo desde Vercel.
-2. Framework preset: **Other**.
+URL esperada:
+
+- `https://osram90.github.io/Bioinformatic-MDatos/`
+
+## Publicación en Vercel
+
+1. Importa el repo en Vercel.
+2. Framework detectado: **Vite**.
 3. Deploy.
 
-`vercel.json` ya incluye headers básicos.
+## Configuración importante
 
-## 5) Activar formulario de contacto
-
-Actualmente el formulario usa placeholder:
-
-```html
-<form class="contact-form" action="https://formspree.io/f/your-form-id" method="POST">
-```
-
-Reemplaza `your-form-id` por tu endpoint real (Formspree u otro proveedor).
-
-## 6) Personalización rápida
-
-- Cambiar correo de contacto en `index.html` (`contacto@mdatos.bio`).
-- Cambiar URL canónica y OpenGraph en `index.html` cuando tengas dominio propio.
-- Si agregas dominio, opcionalmente crea `CNAME`.
+- `vite.config.js` usa `base: '/Bioinformatic-MDatos/'` para que GitHub Pages cargue assets correctamente.
+- El formulario de contacto usa placeholder Formspree y debes reemplazar `your-form-id` en `src/App.jsx`.
