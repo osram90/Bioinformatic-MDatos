@@ -2,39 +2,30 @@
 
 Frontend del portal MDatos-Bioinformatica construido con **React + Vite**.
 
-## ¿Qué se puede hacer ya?
+## Paso a paso: qué se hizo en este proyecto
 
-- Mostrar oferta comercial (Docking + Dinámica Molecular + Asesoría I+D).
-- Captar leads con formulario web.
-- Presentar arquitectura de laboratorio privado (contenedor + Jupyter + cómputo arrendado).
-- Usar un estimador inicial de costo de infraestructura para preventa.
+1. Se creó la base del frontend con React + Vite.
+2. Se definió una narrativa comercial para servicios de Docking y Dinámica Molecular.
+3. Se implementó formulario de captación de leads con endpoint configurable (`VITE_FORM_ENDPOINT`).
+4. Se agregó una interfaz demo para laboratorio (Portal Lab) y estimador de infraestructura.
+5. Se integró pipeline de despliegue para GitHub Pages y configuración para Vercel.
+6. Se mejoró estética con detalles sutiles (fondos, hover, jerarquía visual) orientados a cliente final.
 
-## ¿Qué falta para acceso directo al servicio computacional?
+## Estado actual del proyecto
 
-Este repo ya incluye la UI/flujo de negocio, pero faltan componentes backend para operación automática:
+### Ya funciona
+- Landing comercial lista para presentar servicios.
+- Captura de leads vía formulario (cuando configuras endpoint).
+- Secciones de beneficios, planes y flujo de infraestructura privada.
+- Interfaz demo para estimar cómputo de laboratorio.
 
-1. API backend (auth + creación de sesiones).
-2. Integración con proveedor de cómputo (ej. Vast.ai) para provisionar contenedores.
-3. Exposición segura de URL de Jupyter/UI por cliente.
-4. Monitoreo de ejecución y cierre de instancias por tiempo.
+### Falta para operación completa de laboratorio
+1. API backend (auth + creación de sesiones por cliente).
+2. Integración real con proveedor de cómputo (ej. Vast.ai).
+3. Provisionar contenedor con UI + Jupyter automáticamente.
+4. Exponer URL segura por cliente y cerrar instancias al terminar.
 
-## Stack
-
-- React 18
-- Vite 5
-- CSS custom (sin framework UI)
-- Deploy automático a GitHub Pages por GitHub Actions
-- Deploy opcional en Vercel
-
-## Estructura
-
-- `src/App.jsx`: landing + infraestructura + formulario + interfaz demo de laboratorio.
-- `src/main.jsx`: bootstrap de React.
-- `src/styles.css`: estilos globales/responsivos.
-- `public/`: assets estáticos (`favicon.svg`, `robots.txt`, `sitemap.xml`).
-- `.github/workflows/deploy-pages.yml`: build + publish de `dist/` a Pages.
-
-## Desarrollo local
+## Cómo ver el frontend (local)
 
 ```bash
 npm install

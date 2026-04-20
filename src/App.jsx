@@ -2,24 +2,40 @@ import { useMemo, useState } from 'react';
 
 const navLinks = [
   { href: '#servicios', label: 'Servicios' },
+  { href: '#beneficios', label: 'Beneficios' },
   { href: '#infraestructura', label: 'Infraestructura' },
   { href: '#planes', label: 'Planes' },
   { href: '#portal-lab', label: 'Portal Lab' },
   { href: '#faq', label: 'FAQ' }
 ];
 
+const outcomes = [
+  {
+    title: 'Decisiones más rápidas',
+    desc: 'Reduce ciclos de prueba-error con resultados estructurados para priorizar experimentos.'
+  },
+  {
+    title: 'Menor costo experimental',
+    desc: 'Filtra candidatos antes de laboratorio húmedo y optimiza uso de recursos.'
+  },
+  {
+    title: 'Escalabilidad operativa',
+    desc: 'Pasa de un piloto puntual a un flujo de descubrimiento continuo.'
+  }
+];
+
 const faqs = [
   {
     q: '¿Ya puedo ejecutar experimentos directamente?',
-    a: 'En esta etapa, el portal es comercial + operación inicial. La ejecución automática del laboratorio se activa al integrar backend y orquestador.'
+    a: 'Hoy el portal está listo para captación comercial y solicitud de laboratorio. La ejecución 100% automática se activa en la siguiente fase backend.'
   },
   {
     q: '¿Pueden firmar NDA?',
-    a: 'Sí. Podemos operar con acuerdos de confidencialidad desde el inicio del proyecto.'
+    a: 'Sí. Operamos con acuerdos de confidencialidad desde el inicio del proyecto.'
   },
   {
     q: '¿Cómo entra Vast.ai en el flujo?',
-    a: 'Vast.ai se usa como cómputo arrendado detrás del portal. El cliente no lo ve; recibe acceso a su entorno y resultados.'
+    a: 'Vast.ai funciona como cómputo arrendado detrás del portal. Tu cliente recibe servicio y resultados, no la complejidad de infraestructura.'
   }
 ];
 
@@ -87,10 +103,7 @@ function App() {
         body: formData
       });
 
-      if (!response.ok) {
-        throw new Error('No fue posible enviar el formulario.');
-      }
-
+      if (!response.ok) throw new Error('No fue posible enviar el formulario.');
       form.reset();
       setStatus({ type: 'success', message: 'Solicitud enviada. Te contactamos pronto.' });
     } catch {
@@ -112,11 +125,7 @@ function App() {
             </div>
           </a>
 
-          <button
-            className="menu-toggle"
-            aria-label="Abrir menú"
-            onClick={() => setMenuOpen((v) => !v)}
-          >
+          <button className="menu-toggle" aria-label="Abrir menú" onClick={() => setMenuOpen((v) => !v)}>
             ☰
           </button>
 
@@ -137,18 +146,18 @@ function App() {
         <section id="inicio" className="hero">
           <div className="container hero-grid">
             <div>
-              <p className="kicker">Ciencia + Tecnología + Velocidad</p>
-              <h1>Portal comercial + laboratorio in silico escalable sobre cómputo arrendado.</h1>
+              <p className="kicker">Servicio especializado para I+D biofarmacéutica</p>
+              <h1>Convierte tus hipótesis moleculares en decisiones accionables de negocio.</h1>
               <p className="hero-text">
-                Estamos dejando listo el flujo completo: captación comercial en portal, provisión de
-                contenedores con paquetes preinstalados y ejecución en infraestructura tipo Vast.ai.
+                Te entregamos análisis de <strong>docking</strong> y <strong>dinámica molecular</strong>
+                con enfoque de resultado: qué probar primero, qué descartar y cómo avanzar más rápido.
               </p>
               <div className="hero-cta">
-                <a href="#portal-lab" className="btn">
-                  Ver interfaz de laboratorio
+                <a href="#contacto" className="btn">
+                  Solicitar diagnóstico
                 </a>
-                <a href="#contacto" className="btn btn-ghost">
-                  Iniciar piloto
+                <a href="#beneficios" className="btn btn-ghost">
+                  Ver beneficios
                 </a>
               </div>
               <ul className="hero-metrics">
@@ -161,27 +170,42 @@ function App() {
                   <span>piloto entregable</span>
                 </li>
                 <li>
-                  <strong>Privado</strong>
-                  <span>orquestación no visible al cliente final</span>
+                  <strong>Trazabilidad</strong>
+                  <span>técnica y ejecutiva</span>
                 </li>
               </ul>
             </div>
 
             <article className="hero-card">
-              <h2>Estado actual</h2>
+              <h2>¿Qué obtienes al contratar?</h2>
               <ul>
-                <li>✅ Portal operativo para ventas y captación.</li>
-                <li>✅ Flujo de propuesta y solicitud de laboratorio.</li>
-                <li>🟡 Pendiente: conexión backend real con proveedor de cómputo.</li>
+                <li>Priorización de moléculas con mayor probabilidad de éxito.</li>
+                <li>Informe técnico reproducible para tu equipo científico.</li>
+                <li>Resumen ejecutivo para acelerar decisiones de liderazgo.</li>
               </ul>
             </article>
+          </div>
+        </section>
+
+        <section id="beneficios" className="section section-dark">
+          <div className="container">
+            <p className="kicker">Impacto para tu organización</p>
+            <h2>Beneficios concretos desde la primera fase</h2>
+            <div className="cards">
+              {outcomes.map((item) => (
+                <article className="card" key={item.title}>
+                  <h3>{item.title}</h3>
+                  <p>{item.desc}</p>
+                </article>
+              ))}
+            </div>
           </div>
         </section>
 
         <section id="servicios" className="section">
           <div className="container">
             <p className="kicker">Servicios iniciales</p>
-            <h2>Oferta comercial clara para salir a vender desde hoy</h2>
+            <h2>Oferta comercial clara para salir a producción científica</h2>
             <div className="cards">
               <article className="card">
                 <h3>Molecular Docking</h3>
@@ -193,7 +217,7 @@ function App() {
               </article>
               <article className="card">
                 <h3>Asesoría I+D</h3>
-                <p>Definición de estrategia computacional, criterios de éxito y plan de escalamiento.</p>
+                <p>Diseño de estrategia computacional con foco en hitos medibles y escalabilidad.</p>
               </article>
             </div>
           </div>
@@ -203,17 +227,17 @@ function App() {
           <div className="container two-col">
             <div>
               <p className="kicker">Infraestructura (backend privado)</p>
-              <h2>Arquitectura propuesta para contenedores + GPU/CPU rentadas</h2>
+              <h2>Contenedores listos con UI + Jupyter sobre cómputo arrendado</h2>
               <p>
-                El cliente usa tu portal. Por detrás, tu backend crea y gestiona un contenedor de
-                laboratorio con UI y Jupyter Notebook, conectado a recursos arrendados (p. ej. Vast.ai).
+                El cliente usa tu portal. Detrás, tu backend puede crear un contenedor preconfigurado y
+                conectarlo a GPU/CPU arrendadas (como Vast.ai), sin exponer esa complejidad.
               </p>
             </div>
             <ul className="check-list">
-              <li>1) Portal recibe solicitud de experimento.</li>
-              <li>2) Backend crea/enciende contenedor preconfigurado.</li>
-              <li>3) Se asigna GPU/CPU y almacenamiento temporal.</li>
-              <li>4) Se entrega acceso controlado + reporte al finalizar.</li>
+              <li>1) Solicitud de experimento desde portal.</li>
+              <li>2) Provisionamiento automático de contenedor.</li>
+              <li>3) Asignación de recursos y entorno reproducible.</li>
+              <li>4) Acceso controlado a notebook + reporte final.</li>
             </ul>
           </div>
         </section>
@@ -244,15 +268,15 @@ function App() {
         <section id="portal-lab" className="section section-dark">
           <div className="container two-col">
             <div>
-              <p className="kicker">Interfaz gráfica del laboratorio (demo)</p>
-              <h2>Solicitar entorno de cómputo para experimentos in silico</h2>
+              <p className="kicker">Interfaz gráfica de laboratorio (demo)</p>
+              <h2>Simula tu entorno de cómputo para experimentos in silico</h2>
               <p>
-                Esta interfaz ya puede incluirse en el portal. Próximo paso: conectar estos campos a tu
-                backend para crear instancias reales y exponer notebook/UI bajo autenticación.
+                Puedes usar esta interfaz para pre-venta y onboarding. Próximo paso: conectar con backend
+                para creación real de instancias y acceso seguro por cliente.
               </p>
             </div>
             <article className="card estimator-card">
-              <h3>Estimador rápido de cómputo</h3>
+              <h3>Estimador rápido de infraestructura</h3>
               <label>
                 Tipo de GPU
                 <select value={gpuType} onChange={(e) => setGpuType(e.target.value)}>
@@ -273,9 +297,7 @@ function App() {
               <p className="estimate-result">
                 Estimado infraestructura: <strong>USD {estimate.toFixed(2)}</strong>
               </p>
-              <small>
-                *Cálculo orientativo para preventa. El precio final depende de disponibilidad y región.
-              </small>
+              <small>*Valor orientativo. Puede variar por región, oferta y demanda.</small>
             </article>
           </div>
         </section>
@@ -299,10 +321,9 @@ function App() {
           <div className="container cta-grid">
             <div>
               <p className="kicker">Siguiente paso</p>
-              <h2>Iniciamos tu propuesta técnica-comercial esta semana</h2>
+              <h2>Recibe tu propuesta técnico-comercial esta semana</h2>
               <p>
-                Completa el formulario y te devolvemos un plan de trabajo, estimación y ruta de
-                implementación de laboratorio privado.
+                Completa el formulario y te devolvemos alcance, tiempos y ruta para comenzar el piloto.
               </p>
               <p>
                 <a className="text-link" href="mailto:contacto@mdatos.bio">
@@ -350,7 +371,7 @@ function App() {
       <footer className="site-footer">
         <div className="container footer-content">
           <p>© {year} MDatos-Bioinformatica</p>
-          <p>Startup mode: vender, ejecutar, escalar.</p>
+          <p>Diseñado para convertir interés científico en decisiones de I+D.</p>
         </div>
       </footer>
     </>
