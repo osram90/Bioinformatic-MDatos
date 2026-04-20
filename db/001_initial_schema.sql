@@ -35,6 +35,7 @@ create table if not exists experiments (
   kind text not null,
   status text not null,
   credits_reserved int not null,
+  rented_offer_id uuid,
   estimated_cost_usd numeric(10,4),
   ask_contract_id bigint,
   instance_id bigint,
@@ -47,4 +48,31 @@ create table if not exists artifacts (
   experiment_id uuid not null references experiments(id),
   object_key text not null,
   created_at timestamptz not null default now()
+);
+
+create table if not exists compute_spaces (
+  id uuid primary key,
+  owner_user_id uuid not null references users(id),
+  label text not null,
+  location text not null,
+  total_gpu_units int not null,
+  total_cpu_units int not null,
+  total_ram_gb int not null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists capacity_offers (
+  id uuid primary key,
+  space_id uuid not null references compute_spaces(id),
+  seller_user_id uuid not null references users(id),
+  kind text not null,
+  gpu_units int not null,
+  cpu_units int not null,
+  ram_gb int not null,
+  price_usd_hour numeric(10,4) not null,
+  status text not null,
+  reserved_for_experiment_id uuid references experiments(id),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
 );

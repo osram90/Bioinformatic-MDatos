@@ -6,7 +6,16 @@ from typing import Dict, List
 
 from fastapi import HTTPException
 
-from app.schemas import LaunchExperimentRequest, ExperimentRecord, Plan, Wallet
+from app.schemas import (
+    CapacityOfferRecord,
+    CreateCapacityOfferRequest,
+    CreateSpaceRequest,
+    ExperimentRecord,
+    LaunchExperimentRequest,
+    Plan,
+    SpaceRecord,
+    Wallet,
+)
 from app.config import settings
 
 
@@ -29,6 +38,8 @@ class OrchestratorService:
         self._experiments: Dict[str, ExperimentRecord] = {}
         self._artifacts: Dict[str, str] = {}
         self._wallets: Dict[str, Wallet] = {}
+        self._spaces: Dict[str, SpaceRecord] = {}
+        self._capacity_offers: Dict[str, CapacityOfferRecord] = {}
 
     def list_plans(self) -> List[Plan]:
         return list(PLANS.values())
@@ -51,6 +62,65 @@ class OrchestratorService:
         plan = PLANS[tier]
         return round(plan.max_hourly_usd * KIND_MULTIPLIER[kind], 4)
 
+    def create_space(self, payload: CreateSpaceRequest) -> SpaceRecord:
+        now = datetime.now(UTC)
+        space_id = str(uuid4())
+        record = SpaceRecord(
+            id=space_id,
+            owner_email=payload.owner_email,
+            label=payload.label,
+            location=payload.location,
+            total_gpu_units=payload.total_gpu_units,
+            total_cpu_units=payload.total_cpu_units,
+            total_ram_gb=payload.total_ram_gb,
+            created_at=now,
+            updated_at=now,
+        )
+        self._spaces[space_id] = record
+        return record
+
+    def list_spaces(self) -> List[SpaceRecord]:
+        return sorted(self._spaces.values(), key=lambda x: x.created_at, reverse=True)
+
+    def publish_capacity_offer(self, payload: CreateCapacityOfferRequest) -> CapacityOfferRecord:
+        if payload.space_id not in self._spaces:
+            raise HTTPException(status_code=404, detail="Espacio no encontrado.")
+
+        now = datetime.now(UTC)
+        offer_id = str(uuid4())
+        record = CapacityOfferRecord(
+            id=offer_id,
+            space_id=payload.space_id,
+            seller_email=payload.seller_email,
+            kind=payload.kind,
+            gpu_units=payload.gpu_units,
+            cpu_units=payload.cpu_units,
+            ram_gb=payload.ram_gb,
+            price_usd_hour=payload.price_usd_hour,
+            status="open",
+            created_at=now,
+            updated_at=now,
+        )
+        self._capacity_offers[offer_id] = record
+        return record
+
+    def list_capacity_offers(self, kind: str | None = None) -> List[CapacityOfferRecord]:
+        offers = [x for x in self._capacity_offers.values() if x.status == "open"]
+        if kind:
+            offers = [x for x in offers if x.kind == kind]
+        return sorted(offers, key=lambda x: x.price_usd_hour)
+
+    def _reserve_offer_for_kind(self, kind: str, experiment_id: str) -> CapacityOfferRecord | None:
+        matching = self.list_capacity_offers(kind=kind)
+        if not matching:
+            return None
+        selected = matching[0]
+        selected.status = "reserved"
+        selected.reserved_for_experiment_id = experiment_id
+        selected.updated_at = datetime.now(UTC)
+        self._capacity_offers[selected.id] = selected
+        return selected
+
     def launch_experiment(self, payload: LaunchExperimentRequest) -> ExperimentRecord:
         plan = PLANS[payload.tier]
         wallet = self.get_wallet(payload.user_email)
@@ -67,6 +137,7 @@ class OrchestratorService:
 
         now = datetime.now(UTC)
         exp_id = str(uuid4())
+        reserved_offer = self._reserve_offer_for_kind(payload.kind, exp_id)
         fake_ask_contract_id = int(str(uuid4().int)[:8])
         fake_instance_id = int(str(uuid4().int)[:7])
 
@@ -83,6 +154,7 @@ class OrchestratorService:
             instance_id=fake_instance_id,
             estimated_cost_usd=self._estimate_cost(payload.tier, payload.kind),
             credits_reserved=plan.credits_per_session,
+            rented_offer_id=reserved_offer.id if reserved_offer else None,
         )
         self._experiments[exp_id] = record
         return record
@@ -94,6 +166,11 @@ class OrchestratorService:
         record = self._experiments[experiment_id]
         record.status = "completed"
         record.updated_at = datetime.now(UTC)
+        if record.rented_offer_id and record.rented_offer_id in self._capacity_offers:
+            offer = self._capacity_offers[record.rented_offer_id]
+            offer.status = "closed"
+            offer.updated_at = datetime.now(UTC)
+            self._capacity_offers[offer.id] = offer
         self._artifacts[experiment_id] = artifact_key
         self._experiments[experiment_id] = record
         return record

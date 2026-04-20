@@ -46,6 +46,7 @@ h2 { font-size: clamp(1.3rem,2vw,2rem); }
 }
 .card ul, .check-list { padding-left:1rem; line-height:1.7; color:#b7cbe8; }
 .section { padding:4rem 0; }
+.section-soft { background: linear-gradient(170deg, rgba(9, 19, 37, 0.55), rgba(7, 16, 31, 0.55)); border-top:1px solid rgba(148,163,184,.08); }
 .section-dark { background: linear-gradient(170deg, rgba(20, 36, 65, 0.88), rgba(9, 19, 37, 0.9)); border-top:1px solid rgba(148,163,184,.12); border-bottom:1px solid rgba(148,163,184,.12); }
 .cards { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; }
 .two-col { display:grid; grid-template-columns:1fr 1fr; gap:1rem; align-items:flex-start; }

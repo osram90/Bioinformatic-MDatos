@@ -19,6 +19,10 @@ Este repo está alineado a la idea original de plataforma SaaS/PaaS:
 - `GET /api/plans` → planes Bronze/Plata/Oro.
 - `GET /api/wallet/{user_email}` → wallet por usuario.
 - `POST /api/wallet/topup` → recarga de créditos.
+- `POST /api/infra/spaces` → registra un espacio de cómputo para renta.
+- `GET /api/infra/spaces` → lista espacios disponibles.
+- `POST /api/infra/capacity-offers` → publica subrenta de capacidad por workload.
+- `GET /api/infra/capacity-offers` → marketplace open de subrenta.
 - `POST /api/lab/experiments` → lanza experimento (descuenta créditos).
 - `GET /api/lab/experiments` → histórico.
 - `POST /api/lab/experiments/{id}/complete` → marca como completado.
@@ -71,8 +75,8 @@ Abre:
 
 ## Siguiente fase (para producción)
 
-1. Persistencia real (Postgres + SQLAlchemy/Alembic).
-2. Integración real Vast.ai (`search/create/show/destroy`).
-3. Worker para polling + teardown automático.
-4. Upload real a S3/B2 + signed URLs reales.
-5. Pagos + ledger transaccional de créditos.
+1. Persistencia real (Postgres + SQLAlchemy/Alembic) para wallet + mercado.
+2. Integración real Vast.ai (`search/create/show/destroy`) y proveedores alternos.
+3. Motor de matching para renta/subrenta con políticas de margen.
+4. Worker para polling + teardown automático + facturación por uso real.
+5. Upload real a S3/B2 + signed URLs reales + conciliación contable.
