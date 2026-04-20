@@ -12,7 +12,7 @@ Frontend del portal MDatos-Bioinformatica construido con **React + Vite**.
 
 ## Estructura
 
-- `src/App.jsx`: contenido principal del portal.
+- `src/App.jsx`: landing comercial + formulario + estados de envío.
 - `src/main.jsx`: bootstrap de React.
 - `src/styles.css`: estilos globales/responsivos.
 - `public/`: assets estáticos (`favicon.svg`, `robots.txt`, `sitemap.xml`).
@@ -34,6 +34,16 @@ npm run build
 npm run preview
 ```
 
+## Configurar formulario real
+
+Crear `.env` local con:
+
+```bash
+VITE_FORM_ENDPOINT=https://formspree.io/f/tu_form_id
+```
+
+Sin esa variable, el sitio mostrará aviso y abrirá `mailto:` como respaldo.
+
 ## Publicación en GitHub Pages
 
 1. En el repo, ve a **Settings > Pages**.
@@ -49,9 +59,9 @@ URL esperada:
 
 1. Importa el repo en Vercel.
 2. Framework detectado: **Vite**.
-3. Deploy.
+3. Define `VITE_FORM_ENDPOINT` en Environment Variables.
+4. Deploy.
 
 ## Configuración importante
 
 - `vite.config.js` usa `base: '/Bioinformatic-MDatos/'` para que GitHub Pages cargue assets correctamente.
-- El formulario de contacto usa placeholder Formspree y debes reemplazar `your-form-id` en `src/App.jsx`.
