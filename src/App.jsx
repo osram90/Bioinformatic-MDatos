@@ -2,23 +2,24 @@ import { useMemo, useState } from 'react';
 
 const navLinks = [
   { href: '#servicios', label: 'Servicios' },
-  { href: '#caso-demo', label: 'Caso demo' },
+  { href: '#infraestructura', label: 'Infraestructura' },
   { href: '#planes', label: 'Planes' },
+  { href: '#portal-lab', label: 'Portal Lab' },
   { href: '#faq', label: 'FAQ' }
 ];
 
 const faqs = [
   {
-    q: '¿Cuánto tarda un piloto?',
-    a: 'Generalmente de 1 a 3 semanas según volumen, objetivo biológico y complejidad.'
+    q: '¿Ya puedo ejecutar experimentos directamente?',
+    a: 'En esta etapa, el portal es comercial + operación inicial. La ejecución automática del laboratorio se activa al integrar backend y orquestador.'
   },
   {
     q: '¿Pueden firmar NDA?',
     a: 'Sí. Podemos operar con acuerdos de confidencialidad desde el inicio del proyecto.'
   },
   {
-    q: '¿Qué recibo al finalizar?',
-    a: 'Reporte ejecutivo, anexo técnico reproducible y sesión de resultados para decisiones de I+D.'
+    q: '¿Cómo entra Vast.ai en el flujo?',
+    a: 'Vast.ai se usa como cómputo arrendado detrás del portal. El cliente no lo ve; recibe acceso a su entorno y resultados.'
   }
 ];
 
@@ -43,13 +44,22 @@ const plans = [
   }
 ];
 
+const gpuRates = {
+  'RTX 4090': 0.65,
+  'RTX A6000': 0.85,
+  'A100 40GB': 1.8
+};
+
 function App() {
   const year = useMemo(() => new Date().getFullYear(), []);
   const [menuOpen, setMenuOpen] = useState(false);
   const [status, setStatus] = useState({ type: 'idle', message: '' });
   const [loading, setLoading] = useState(false);
+  const [gpuType, setGpuType] = useState('RTX 4090');
+  const [hours, setHours] = useState(24);
 
   const closeMenu = () => setMenuOpen(false);
+  const estimate = useMemo(() => (gpuRates[gpuType] ?? 0) * hours, [gpuType, hours]);
 
   const onSubmit = async (event) => {
     event.preventDefault();
@@ -83,7 +93,7 @@ function App() {
 
       form.reset();
       setStatus({ type: 'success', message: 'Solicitud enviada. Te contactamos pronto.' });
-    } catch (error) {
+    } catch {
       setStatus({ type: 'error', message: 'Error enviando formulario. Intenta nuevamente.' });
     } finally {
       setLoading(false);
@@ -128,17 +138,17 @@ function App() {
           <div className="container hero-grid">
             <div>
               <p className="kicker">Ciencia + Tecnología + Velocidad</p>
-              <h1>Conviértete en una startup bioinformática que entrega resultados reales.</h1>
+              <h1>Portal comercial + laboratorio in silico escalable sobre cómputo arrendado.</h1>
               <p className="hero-text">
-                Te apoyamos con <strong>molecular docking</strong> y <strong>dinámica molecular</strong>
-                en formato servicio-producto: rápido para vender, sólido para escalar.
+                Estamos dejando listo el flujo completo: captación comercial en portal, provisión de
+                contenedores con paquetes preinstalados y ejecución en infraestructura tipo Vast.ai.
               </p>
               <div className="hero-cta">
-                <a href="#contacto" className="btn">
-                  Iniciar piloto
+                <a href="#portal-lab" className="btn">
+                  Ver interfaz de laboratorio
                 </a>
-                <a href="#planes" className="btn btn-ghost">
-                  Ver planes
+                <a href="#contacto" className="btn btn-ghost">
+                  Iniciar piloto
                 </a>
               </div>
               <ul className="hero-metrics">
@@ -148,21 +158,21 @@ function App() {
                 </li>
                 <li>
                   <strong>1-3 semanas</strong>
-                  <span>para piloto entregable</span>
+                  <span>piloto entregable</span>
                 </li>
                 <li>
-                  <strong>Escalable</strong>
-                  <span>de servicio a SaaS</span>
+                  <strong>Privado</strong>
+                  <span>orquestación no visible al cliente final</span>
                 </li>
               </ul>
             </div>
 
             <article className="hero-card">
-              <h2>Qué logramos contigo</h2>
+              <h2>Estado actual</h2>
               <ul>
-                <li>Priorización de moléculas candidatas para validación experimental.</li>
-                <li>Evaluación de estabilidad proteína-ligando con evidencia cuantitativa.</li>
-                <li>Informe accionable para comité científico y toma de decisiones.</li>
+                <li>✅ Portal operativo para ventas y captación.</li>
+                <li>✅ Flujo de propuesta y solicitud de laboratorio.</li>
+                <li>🟡 Pendiente: conexión backend real con proveedor de cómputo.</li>
               </ul>
             </article>
           </div>
@@ -189,21 +199,21 @@ function App() {
           </div>
         </section>
 
-        <section id="caso-demo" className="section section-dark">
+        <section id="infraestructura" className="section section-dark">
           <div className="container two-col">
             <div>
-              <p className="kicker">Caso demo</p>
-              <h2>Ejemplo de resultado que puedes mostrar a clientes</h2>
+              <p className="kicker">Infraestructura (backend privado)</p>
+              <h2>Arquitectura propuesta para contenedores + GPU/CPU rentadas</h2>
               <p>
-                Pilotamos un target enzimático con 40 ligandos. Se priorizaron 6 candidatos top por
-                docking y se validaron 3 complejos estables en dinámica molecular de producción.
+                El cliente usa tu portal. Por detrás, tu backend crea y gestiona un contenedor de
+                laboratorio con UI y Jupyter Notebook, conectado a recursos arrendados (p. ej. Vast.ai).
               </p>
             </div>
             <ul className="check-list">
-              <li>40 ligandos evaluados en screening inicial.</li>
-              <li>6 candidatos top por score e interacciones clave.</li>
-              <li>3 complejos con estabilidad consistente en MD.</li>
-              <li>1 reporte ejecutivo + anexo técnico reproducible.</li>
+              <li>1) Portal recibe solicitud de experimento.</li>
+              <li>2) Backend crea/enciende contenedor preconfigurado.</li>
+              <li>3) Se asigna GPU/CPU y almacenamiento temporal.</li>
+              <li>4) Se entrega acceso controlado + reporte al finalizar.</li>
             </ul>
           </div>
         </section>
@@ -231,7 +241,46 @@ function App() {
           </div>
         </section>
 
-        <section id="faq" className="section section-dark">
+        <section id="portal-lab" className="section section-dark">
+          <div className="container two-col">
+            <div>
+              <p className="kicker">Interfaz gráfica del laboratorio (demo)</p>
+              <h2>Solicitar entorno de cómputo para experimentos in silico</h2>
+              <p>
+                Esta interfaz ya puede incluirse en el portal. Próximo paso: conectar estos campos a tu
+                backend para crear instancias reales y exponer notebook/UI bajo autenticación.
+              </p>
+            </div>
+            <article className="card estimator-card">
+              <h3>Estimador rápido de cómputo</h3>
+              <label>
+                Tipo de GPU
+                <select value={gpuType} onChange={(e) => setGpuType(e.target.value)}>
+                  {Object.keys(gpuRates).map((gpu) => (
+                    <option key={gpu}>{gpu}</option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Horas estimadas
+                <input
+                  type="number"
+                  min="1"
+                  value={hours}
+                  onChange={(e) => setHours(Number(e.target.value) || 1)}
+                />
+              </label>
+              <p className="estimate-result">
+                Estimado infraestructura: <strong>USD {estimate.toFixed(2)}</strong>
+              </p>
+              <small>
+                *Cálculo orientativo para preventa. El precio final depende de disponibilidad y región.
+              </small>
+            </article>
+          </div>
+        </section>
+
+        <section id="faq" className="section">
           <div className="container">
             <p className="kicker">Preguntas frecuentes</p>
             <h2>Respuestas rápidas</h2>
@@ -250,9 +299,10 @@ function App() {
           <div className="container cta-grid">
             <div>
               <p className="kicker">Siguiente paso</p>
-              <h2>Iniciamos tu primera propuesta esta semana</h2>
+              <h2>Iniciamos tu propuesta técnica-comercial esta semana</h2>
               <p>
-                Completa el formulario y te devolvemos un plan técnico-comercial para comenzar el piloto.
+                Completa el formulario y te devolvemos un plan de trabajo, estimación y ruta de
+                implementación de laboratorio privado.
               </p>
               <p>
                 <a className="text-link" href="mailto:contacto@mdatos.bio">
@@ -277,12 +327,12 @@ function App() {
                 <input type="text" name="organizacion" required />
               </label>
               <label>
-                Servicio
-                <select name="servicio" required>
+                Objetivo principal
+                <select name="objetivo" required>
                   <option value="">Selecciona</option>
-                  <option>Docking Molecular</option>
-                  <option>Dinámica Molecular</option>
-                  <option>Combo Discovery</option>
+                  <option>Lanzar servicio Docking</option>
+                  <option>Lanzar servicio Dinámica Molecular</option>
+                  <option>Montar laboratorio con contenedor + Jupyter</option>
                 </select>
               </label>
               <label>

@@ -2,6 +2,22 @@
 
 Frontend del portal MDatos-Bioinformatica construido con **React + Vite**.
 
+## ¿Qué se puede hacer ya?
+
+- Mostrar oferta comercial (Docking + Dinámica Molecular + Asesoría I+D).
+- Captar leads con formulario web.
+- Presentar arquitectura de laboratorio privado (contenedor + Jupyter + cómputo arrendado).
+- Usar un estimador inicial de costo de infraestructura para preventa.
+
+## ¿Qué falta para acceso directo al servicio computacional?
+
+Este repo ya incluye la UI/flujo de negocio, pero faltan componentes backend para operación automática:
+
+1. API backend (auth + creación de sesiones).
+2. Integración con proveedor de cómputo (ej. Vast.ai) para provisionar contenedores.
+3. Exposición segura de URL de Jupyter/UI por cliente.
+4. Monitoreo de ejecución y cierre de instancias por tiempo.
+
 ## Stack
 
 - React 18
@@ -12,7 +28,7 @@ Frontend del portal MDatos-Bioinformatica construido con **React + Vite**.
 
 ## Estructura
 
-- `src/App.jsx`: landing comercial + formulario + estados de envío.
+- `src/App.jsx`: landing + infraestructura + formulario + interfaz demo de laboratorio.
 - `src/main.jsx`: bootstrap de React.
 - `src/styles.css`: estilos globales/responsivos.
 - `public/`: assets estáticos (`favicon.svg`, `robots.txt`, `sitemap.xml`).

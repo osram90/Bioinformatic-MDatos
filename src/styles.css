@@ -53,12 +53,19 @@ h2 { font-size: clamp(1.5rem,2.1vw,2.15rem); }
 
 .hero-card,.card { background: rgba(15,28,52,.85); border:1px solid #22375f; border-radius:14px; padding:1.2rem; }
 .hero-card ul,.card ul { padding-left:1rem; line-height:1.7; color:#b7cbe8; }
+.card label { display:grid; gap:.3rem; color:#c6dbfa; margin-bottom:.7rem; font-size:.95rem; }
+.card input,.card select {
+  border:1px solid #355483; border-radius:10px; background:#061227; color:#e0eeff; padding:.7rem; font:inherit;
+}
+.estimate-result { margin: .6rem 0 .5rem; }
+
 .section { padding:4rem 0; }
-.cards,.faq-grid,.timeline { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; }
+.cards,.faq-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; }
 .section-dark { background: linear-gradient(170deg, rgba(20, 36, 65, 0.95), rgba(9, 19, 37, 0.95)); border-top:1px solid rgba(148,163,184,.12); border-bottom:1px solid rgba(148,163,184,.12); }
 .two-col { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; align-items:center; }
 .check-list { margin:0; padding:0; list-style:none; display:grid; gap:.7rem; }
 .check-list li { background: rgba(11,25,48,.85); border:1px solid #2a416f; border-radius:10px; padding:.9rem; }
+.estimator-card small { color: #9db4d7; }
 
 .cta-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; }
 .contact-form { background: rgba(11,24,44,.86); border:1px solid #28436d; border-radius:15px; padding:1rem; display:grid; gap:.85rem; }
@@ -74,7 +81,7 @@ h2 { font-size: clamp(1.5rem,2.1vw,2.15rem); }
 .footer-content { display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap; color:#8eabd0; font-size:.87rem; }
 
 @media (max-width: 920px) {
-  .hero-grid,.cards,.faq-grid,.timeline,.two-col,.cta-grid,.hero-metrics { grid-template-columns:1fr; }
+  .hero-grid,.cards,.faq-grid,.two-col,.cta-grid,.hero-metrics { grid-template-columns:1fr; }
   .main-nav {
     position:absolute; right:4vw; top:68px; flex-direction:column; align-items:stretch; min-width:220px;
     background:rgba(6,15,30,.97); border:1px solid var(--line); border-radius:12px; padding:.75rem; display:none;
