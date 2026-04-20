@@ -1,74 +1,75 @@
-# MDatos-Bioinformatica Web
+# MDatos.ai – Frontend + Orquestador Backend (MVP Operativo)
 
-Frontend del portal MDatos-Bioinformatica construido con **React + Vite**.
+Este repositorio ahora incluye:
 
-## Paso a paso: qué se hizo en este proyecto
+1. **Frontend web** para marketing + sección **Mi Laboratorio**.
+2. **Backend FastAPI** con endpoints de orquestación MVP para lanzar/listar/completar experimentos y generar URLs firmadas simuladas.
 
-1. Se creó la base del frontend con React + Vite.
-2. Se definió una narrativa comercial para servicios de Docking y Dinámica Molecular.
-3. Se implementó formulario de captación de leads con endpoint configurable (`VITE_FORM_ENDPOINT`).
-4. Se agregó una interfaz demo para laboratorio (Portal Lab) y estimador de infraestructura.
-5. Se integró pipeline de despliegue para GitHub Pages y configuración para Vercel.
-6. Se mejoró estética con detalles sutiles (fondos, hover, jerarquía visual) orientados a cliente final.
+> Objetivo: avanzar hacia la idea original de plataforma SaaS/PaaS que cobre primero, orqueste cómputo dinámico y entregue resultados finales sin fricción para el cliente.
 
-## Estado actual del proyecto
+---
 
-### Ya funciona
-- Landing comercial lista para presentar servicios.
-- Captura de leads vía formulario (cuando configuras endpoint).
-- Secciones de beneficios, planes y flujo de infraestructura privada.
-- Interfaz demo para estimar cómputo de laboratorio.
+## Arquitectura MVP incluida
 
-### Falta para operación completa de laboratorio
-1. API backend (auth + creación de sesiones por cliente).
-2. Integración real con proveedor de cómputo (ej. Vast.ai).
-3. Provisionar contenedor con UI + Jupyter automáticamente.
-4. Exponer URL segura por cliente y cerrar instancias al terminar.
+### Frontend (`src/`)
+- Landing de servicios.
+- Formulario de lanzamiento de experimento (tier + tipo de workload).
+- Historial de experimentos con estado.
+- Botón de descarga por URL firmada temporal.
 
-## Cómo ver el frontend (local)
+### Backend (`backend/app/`)
+- `POST /api/lab/experiments` → crea experimento y simula lease/provider ids.
+- `GET /api/lab/experiments` → histórico.
+- `POST /api/lab/experiments/{id}/complete` → marca como completado.
+- `POST /api/lab/experiments/{id}/download-url` → URL firmada temporal (simulada).
+
+---
+
+## Ejecución local paso a paso
+
+### 1) Backend
+
+```bash
+cd backend
+python -m venv .venv
+source .venv/bin/activate  # En Windows PowerShell: .venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8001
+```
+
+Healthcheck:
+
+```bash
+curl http://localhost:8001/health
+```
+
+### 2) Frontend
 
 ```bash
 npm install
 npm run dev
 ```
 
-Abrir `http://localhost:5173`
+Asegúrate de que `VITE_API_BASE_URL` apunte a `http://localhost:8001`.
 
-## Build de producción
+---
 
-```bash
-npm run build
-npm run preview
-```
+## Variables de entorno
 
-## Configurar formulario real
+Copia `.env.example` y ajusta:
 
-Crear `.env` local con:
+- `VITE_API_BASE_URL`
+- `VAST_AI_API_KEY`
+- `RESULTS_BUCKET`
+- `SIGNED_URL_TTL_SECONDS`
 
-```bash
-VITE_FORM_ENDPOINT=https://formspree.io/f/tu_form_id
-```
+---
 
-Sin esa variable, el sitio mostrará aviso y abrirá `mailto:` como respaldo.
+## Qué queda para producción
 
-## Publicación en GitHub Pages
+1. Conectar backend a DB real (Postgres + SQLAlchemy/Alembic).
+2. Integrar llamadas reales a Vast.ai (search/create/show/destroy).
+3. Worker asíncrono para polling de jobs y destrucción automática.
+4. Integrar S3/B2 real para artefactos y signed URLs reales.
+5. Integrar cobros y wallet/ledger antes de gastar cómputo.
 
-1. En el repo, ve a **Settings > Pages**.
-2. En **Source**, selecciona **GitHub Actions**.
-3. Haz push a `main`.
-4. El workflow compila (`npm ci`, `npm run build`) y publica `dist/`.
-
-URL esperada:
-
-- `https://osram90.github.io/Bioinformatic-MDatos/`
-
-## Publicación en Vercel
-
-1. Importa el repo en Vercel.
-2. Framework detectado: **Vite**.
-3. Define `VITE_FORM_ENDPOINT` en Environment Variables.
-4. Deploy.
-
-## Configuración importante
-
-- `vite.config.js` usa `base: '/Bioinformatic-MDatos/'` para que GitHub Pages cargue assets correctamente.
