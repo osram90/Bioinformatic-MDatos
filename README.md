@@ -1,63 +1,67 @@
-# MDatos.ai – Frontend + Orquestador Backend (MVP Operativo)
+# MDatos.ai – MVP Operativo (Frontend + Backend)
 
-Este repositorio ahora incluye:
+Este repo está alineado a la idea original de plataforma SaaS/PaaS:
 
-1. **Frontend web** para marketing + sección **Mi Laboratorio**.
-2. **Backend FastAPI** con endpoints de orquestación MVP para lanzar/listar/completar experimentos y generar URLs firmadas simuladas.
+- Cobro previo por créditos (wallet)
+- Ejecución automatizada por tier/workload
+- Entrega de resultados por URL firmada temporal
 
-> Objetivo: avanzar hacia la idea original de plataforma SaaS/PaaS que cobre primero, orqueste cómputo dinámico y entregue resultados finales sin fricción para el cliente.
+## Qué incluye hoy
 
----
+### Frontend (Vite + React)
+- Landing comercial.
+- Sección **Mi Laboratorio** con:
+  - Wallet de créditos + recarga.
+  - Lanzamiento de experimento (tier + kind).
+  - Histórico de corridas con estado y créditos reservados.
 
-## Arquitectura MVP incluida
-
-### Frontend (`src/`)
-- Landing de servicios.
-- Formulario de lanzamiento de experimento (tier + tipo de workload).
-- Historial de experimentos con estado.
-- Botón de descarga por URL firmada temporal.
-
-### Backend (`backend/app/`)
-- `POST /api/lab/experiments` → crea experimento y simula lease/provider ids.
+### Backend (FastAPI)
+- `GET /api/plans` → planes Bronze/Plata/Oro.
+- `GET /api/wallet/{user_email}` → wallet por usuario.
+- `POST /api/wallet/topup` → recarga de créditos.
+- `POST /api/lab/experiments` → lanza experimento (descuenta créditos).
 - `GET /api/lab/experiments` → histórico.
 - `POST /api/lab/experiments/{id}/complete` → marca como completado.
-- `POST /api/lab/experiments/{id}/download-url` → URL firmada temporal (simulada).
+- `POST /api/lab/experiments/{id}/download-url` → signed URL temporal (simulada).
+
+> Nota: la integración real con Vast.ai, DB persistente y storage real está preparada como siguiente fase.
 
 ---
 
-## Ejecución local paso a paso
+## Ejecutar localmente (PowerShell)
 
 ### 1) Backend
 
-```bash
-cd backend
+```powershell
+cd I:\MDATOS2.0\Bioinformatic-MDatos\backend
 python -m venv .venv
-source .venv/bin/activate  # En Windows PowerShell: .venv\Scripts\Activate.ps1
+.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8001
 ```
 
-Healthcheck:
-
-```bash
-curl http://localhost:8001/health
-```
+Prueba salud:
+- `http://127.0.0.1:8001/health`
 
 ### 2) Frontend
 
-```bash
+En otra terminal:
+
+```powershell
+cd I:\MDATOS2.0\Bioinformatic-MDatos
 npm install
+$env:VITE_API_BASE_URL="http://127.0.0.1:8001"
 npm run dev
 ```
 
-Asegúrate de que `VITE_API_BASE_URL` apunte a `http://localhost:8001`.
+Abre:
+- `http://localhost:5173`
 
 ---
 
 ## Variables de entorno
 
-Copia `.env.example` y ajusta:
-
+`.env.example` incluye:
 - `VITE_API_BASE_URL`
 - `VAST_AI_API_KEY`
 - `RESULTS_BUCKET`
@@ -65,11 +69,10 @@ Copia `.env.example` y ajusta:
 
 ---
 
-## Qué queda para producción
+## Siguiente fase (para producción)
 
-1. Conectar backend a DB real (Postgres + SQLAlchemy/Alembic).
-2. Integrar llamadas reales a Vast.ai (search/create/show/destroy).
-3. Worker asíncrono para polling de jobs y destrucción automática.
-4. Integrar S3/B2 real para artefactos y signed URLs reales.
-5. Integrar cobros y wallet/ledger antes de gastar cómputo.
-
+1. Persistencia real (Postgres + SQLAlchemy/Alembic).
+2. Integración real Vast.ai (`search/create/show/destroy`).
+3. Worker para polling + teardown automático.
+4. Upload real a S3/B2 + signed URLs reales.
+5. Pagos + ledger transaccional de créditos.

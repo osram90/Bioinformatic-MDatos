@@ -10,6 +10,9 @@ function App() {
     kind: 'docking'
   });
   const [experiments, setExperiments] = useState([]);
+  const [plans, setPlans] = useState([]);
+  const [wallet, setWallet] = useState(null);
+  const [topupCredits, setTopupCredits] = useState(100);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
@@ -18,13 +21,47 @@ function App() {
   const fetchExperiments = async () => {
     const res = await fetch(`${API_BASE_URL}/api/lab/experiments`);
     if (!res.ok) return;
-    const data = await res.json();
-    setExperiments(data);
+    setExperiments(await res.json());
+  };
+
+  const fetchPlans = async () => {
+    const res = await fetch(`${API_BASE_URL}/api/plans`);
+    if (!res.ok) return;
+    setPlans(await res.json());
+  };
+
+  const fetchWallet = async (email) => {
+    if (!email) return;
+    const res = await fetch(`${API_BASE_URL}/api/wallet/${email}`);
+    if (!res.ok) return;
+    setWallet(await res.json());
   };
 
   useEffect(() => {
+    fetchPlans();
     fetchExperiments();
   }, []);
+
+  const onTopup = async () => {
+    if (!form.user_email) {
+      setMessage('Primero ingresa correo de usuario para recargar wallet.');
+      return;
+    }
+
+    const res = await fetch(`${API_BASE_URL}/api/wallet/topup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_email: form.user_email, credits: Number(topupCredits) })
+    });
+
+    if (!res.ok) {
+      setMessage('No se pudo recargar wallet.');
+      return;
+    }
+
+    setWallet(await res.json());
+    setMessage('Wallet recargada correctamente.');
+  };
 
   const onSubmit = async (event) => {
     event.preventDefault();
@@ -38,13 +75,16 @@ function App() {
         body: JSON.stringify(form)
       });
 
-      if (!res.ok) throw new Error('No se pudo lanzar el experimento.');
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.detail || 'No se pudo lanzar el experimento.');
+      }
 
       setMessage('Experimento creado y enviado al orquestador.');
-      setForm((prev) => ({ ...prev, project_name: '' }));
       await fetchExperiments();
-    } catch {
-      setMessage('Error creando experimento. Revisa backend/API.');
+      await fetchWallet(form.user_email);
+    } catch (error) {
+      setMessage(error.message || 'Error creando experimento.');
     } finally {
       setLoading(false);
     }
@@ -78,7 +118,6 @@ function App() {
           <nav className="main-nav">
             <a href="#servicios">Servicios</a>
             <a href="#laboratorio">Mi Laboratorio</a>
-            <a href="#flujo">Flujo</a>
           </nav>
         </div>
       </header>
@@ -88,39 +127,21 @@ function App() {
           <div className="container hero-grid">
             <div>
               <p className="kicker">SaaS/PaaS Bioinformática Comercial</p>
-              <h1>Resultados de Docking y MD sin administrar HPC ni código.</h1>
+              <h1>Automatiza Docking y MD con cobro previo y entrega segura de resultados.</h1>
               <p className="hero-text">
-                MDatos.ai cobra por paquete de cómputo, orquesta nodos GPU/CPU en background y entrega
-                resultados con descarga segura temporal.
+                Modelo por créditos Bronze/Plata/Oro, ejecución automática en cómputo arrendado y
+                descarga con URLs firmadas temporales.
               </p>
-              <div className="hero-cta">
-                <a href="#laboratorio" className="btn">Ir a Mi Laboratorio</a>
-              </div>
             </div>
             <article className="hero-card">
-              <h2>Objetivo de negocio</h2>
+              <h2>Planes activos</h2>
               <ul>
-                <li>Cobro previo por créditos (Bronze/Plata/Oro).</li>
-                <li>Ejecución automática sobre cómputo arrendado.</li>
-                <li>Entrega final segura con Signed URLs.</li>
+                {plans.map((plan) => (
+                  <li key={plan.code}>
+                    <strong>{plan.display_name}</strong> · {plan.credits_per_session} créditos/sesión · tope USD {plan.max_hourly_usd}/h
+                  </li>
+                ))}
               </ul>
-            </article>
-          </div>
-        </section>
-
-        <section id="servicios" className="section section-dark">
-          <div className="container cards">
-            <article className="card">
-              <h3>Docking Molecular</h3>
-              <p>Perfil optimizado por CPU/costo para screening rápido y rentable.</p>
-            </article>
-            <article className="card">
-              <h3>Dinámica Molecular</h3>
-              <p>Perfil optimizado por GPU/VRAM para estabilidad y análisis profundo.</p>
-            </article>
-            <article className="card">
-              <h3>Automatización End-to-End</h3>
-              <p>Launch, tracking, almacenamiento de resultados y destrucción de nodo sin intervención.</p>
             </article>
           </div>
         </section>
@@ -128,16 +149,31 @@ function App() {
         <section id="laboratorio" className="section">
           <div className="container two-col">
             <form className="contact-form" onSubmit={onSubmit}>
-              <h2>Mi Laboratorio · Lanzar experimento</h2>
+              <h2>Mi Laboratorio</h2>
               <label>
                 Correo de usuario
                 <input
                   type="email"
                   value={form.user_email}
-                  onChange={(e) => setForm((prev) => ({ ...prev, user_email: e.target.value }))}
+                  onChange={(e) => {
+                    const email = e.target.value;
+                    setForm((prev) => ({ ...prev, user_email: email }));
+                    fetchWallet(email);
+                  }}
                   required
                 />
               </label>
+
+              <div className="card">
+                <h3>Wallet</h3>
+                <p>Créditos actuales: <strong>{wallet?.credits ?? 0}</strong></p>
+                <label>
+                  Recarga de créditos
+                  <input type="number" value={topupCredits} onChange={(e) => setTopupCredits(e.target.value)} min="1" />
+                </label>
+                <button type="button" className="btn btn-sm" onClick={onTopup}>Recargar wallet</button>
+              </div>
+
               <label>
                 Nombre del proyecto
                 <input
@@ -149,10 +185,7 @@ function App() {
               </label>
               <label>
                 Tier de cómputo
-                <select
-                  value={form.tier}
-                  onChange={(e) => setForm((prev) => ({ ...prev, tier: e.target.value }))}
-                >
+                <select value={form.tier} onChange={(e) => setForm((prev) => ({ ...prev, tier: e.target.value }))}>
                   <option value="bronze">Bronze</option>
                   <option value="silver">Plata</option>
                   <option value="gold">Oro</option>
@@ -160,10 +193,7 @@ function App() {
               </label>
               <label>
                 Tipo de experimento
-                <select
-                  value={form.kind}
-                  onChange={(e) => setForm((prev) => ({ ...prev, kind: e.target.value }))}
-                >
+                <select value={form.kind} onChange={(e) => setForm((prev) => ({ ...prev, kind: e.target.value }))}>
                   <option value="docking">Docking</option>
                   <option value="molecular_dynamics">Dinámica Molecular</option>
                   <option value="hybrid">Híbrido</option>
@@ -176,14 +206,16 @@ function App() {
             </form>
 
             <div className="card">
-              <h2>Histórico</h2>
+              <h2>Histórico de experimentos</h2>
               <div className="table-wrap">
                 <table>
                   <thead>
                     <tr>
                       <th>Proyecto</th>
                       <th>Tier</th>
+                      <th>Kind</th>
                       <th>Estado</th>
+                      <th>Créditos</th>
                       <th>Acción</th>
                     </tr>
                   </thead>
@@ -192,7 +224,9 @@ function App() {
                       <tr key={exp.id}>
                         <td>{exp.project_name}</td>
                         <td>{exp.tier}</td>
+                        <td>{exp.kind}</td>
                         <td>{exp.status}</td>
+                        <td>{exp.credits_reserved}</td>
                         <td>
                           <button className="btn btn-sm" onClick={() => onRequestDownload(exp.id)}>
                             Descargar
@@ -206,25 +240,12 @@ function App() {
             </div>
           </div>
         </section>
-
-        <section id="flujo" className="section section-dark">
-          <div className="container">
-            <h2>Flujo automatizado objetivo</h2>
-            <ol className="check-list">
-              <li>Pago y reserva de créditos.</li>
-              <li>Selección de oferta y creación de instancia (Vast.ai).</li>
-              <li>Ejecución de contenedor bioinformático.</li>
-              <li>Subida de resultados a S3/B2 + Signed URL temporal.</li>
-              <li>Destrucción automática de nodo y notificación al usuario.</li>
-            </ol>
-          </div>
-        </section>
       </main>
 
       <footer className="site-footer">
         <div className="container footer-content">
           <p>© {year} MDatos.ai</p>
-          <p>Plataforma operativa en evolución (frontend + backend orquestador).</p>
+          <p>Backend orquestador + UI de laboratorio alineados al flujo comercial.</p>
         </div>
       </footer>
     </>

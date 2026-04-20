@@ -7,6 +7,9 @@ from app.schemas import (
     ExperimentRecord,
     CompleteExperimentRequest,
     SignedUrlResponse,
+    Plan,
+    Wallet,
+    CreditTopupRequest,
 )
 from app.services.orchestrator import OrchestratorService
 
@@ -25,6 +28,21 @@ app.add_middleware(
 @app.get("/health")
 def health() -> dict:
     return {"status": "ok", "service": settings.app_name}
+
+
+@app.get("/api/plans", response_model=list[Plan])
+def list_plans() -> list[Plan]:
+    return service.list_plans()
+
+
+@app.get("/api/wallet/{user_email}", response_model=Wallet)
+def get_wallet(user_email: str) -> Wallet:
+    return service.get_wallet(user_email)
+
+
+@app.post("/api/wallet/topup", response_model=Wallet)
+def topup_wallet(payload: CreditTopupRequest) -> Wallet:
+    return service.topup_wallet(payload.user_email, payload.credits)
 
 
 @app.post("/api/lab/experiments", response_model=ExperimentRecord)
